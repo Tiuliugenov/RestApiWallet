@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Создание таблицы wallet -->
+    <changeSet id="1" author="Kairat">
+        <createTable tableName="wallet">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="balance" type="DECIMAL(19,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Создание таблицы transactions -->
+    <changeSet id="2" author="Kairat">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="transactions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transactions">
+            <column name="transaction_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="wallet_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="decimal(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operation_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Добавление внешнего ключа для связи между таблицами transactions и wallet -->
+    <changeSet id="3" author="Kairat">
+        <addForeignKeyConstraint
+                baseTableName="transactions"
+                baseColumnNames="wallet_id"
+                constraintName="fk_wallet_transactions"
+                referencedTableName="wallet"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
